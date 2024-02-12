@@ -1,0 +1,115 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "paths": {
+        "/": {
+            "post": {
+                "description": "Create a new URL with a short URL",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Create a new URL with a short URL",
+                "operationId": "create-url",
+                "parameters": [
+                    {
+                        "description": "URL input",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateUrlInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "data",
+                        "schema": {
+                            "$ref": "#/definitions/models.Url"
+                        }
+                    },
+                    "400": {
+                        "description": "error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/{short_url}": {
+            "get": {
+                "description": "Redirect to the original URL from the short URL",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Redirect to the original URL from the short URL",
+                "operationId": "fetch-url",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Short URL",
+                        "name": "short_url",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "301": {
+                        "description": "Redirect to the original URL",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Record not found!",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.CreateUrlInput": {
+            "type": "object",
+            "required": [
+                "link"
+            ],
+            "properties": {
+                "link": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Url": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "original_url": {
+                    "type": "string"
+                },
+                "short_url": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "view_count": {
+                    "type": "integer"
+                }
+            }
+        }
+    }
+}
