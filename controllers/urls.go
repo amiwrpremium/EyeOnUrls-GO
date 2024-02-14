@@ -72,3 +72,7 @@ func CreateUrl(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": url})
 	return
 }
+
+func IndexHTML(c *gin.Context) {
+	c.HTML(http.StatusOK, "index.html", gin.H{})
+}

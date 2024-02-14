@@ -7,6 +7,7 @@ import (
 
 var DB *gorm.DB
 
+// ConnectDatabase is a function that connects to the database
 func ConnectDatabase() {
 	database, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
 

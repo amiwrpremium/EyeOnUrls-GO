@@ -11,13 +11,16 @@ import (
 
 func RunWebServer() {
 	r := gin.Default()
+	r.LoadHTMLGlob("templates/*")
+
 	docs.SwaggerInfo.Title = "EyeOnUrls API"
 	docs.SwaggerInfo.Description = "This is a simple URL shortener API"
 	docs.SwaggerInfo.Version = "1.0"
 	docs.SwaggerInfo.Host = "localhost:8080"
 
-	r.GET("/:short_url", controllers.FetchUrl)
+	r.GET("/", controllers.IndexHTML)
 	r.POST("/", controllers.CreateUrl)
+	r.GET("/:short_url", controllers.FetchUrl)
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 

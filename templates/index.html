@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .container {
+            width: 500px;
+            padding: 30px;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.7);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(20px);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2c3e50;
+            font-size: 28px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: none;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: background 0.3s ease;
+            font-size: 16px;
+        }
+
+        input[type="text"]:focus {
+            background: rgba(255, 255, 255, 1);
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 20px;
+            background: #3498db;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            font-size: 18px;
+        }
+
+        input[type="submit"]:hover {
+            background: #2980b9;
+        }
+
+        .short-url {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .short-url span {
+            color: #3498db;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 16px;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>URL Shortener</h1>
+    <form id="urlForm">
+        <input type="text" id="urlInput" placeholder="Enter your URL">
+        <div class="error-message" id="errorMessage"></div>
+        <input type="submit" value="Shorten URL">
+    </form>
+    <div class="short-url" id="shortUrlDiv" style="display: none;">
+        Shortened URL: <span id="shortUrl"></span>
+    </div>
+</div>
+
+<script>
+    const urlInput = document.getElementById('urlInput');
+    const errorMessage = document.getElementById('errorMessage');
+
+    urlInput.addEventListener('input', function() {
+        const url = this.value.trim();
+
+        // Reset error message and hide it
+        errorMessage.textContent = '';
+        errorMessage.style.display = 'none';
+
+        // Check if URL is empty
+        if (!url) {
+            errorMessage.textContent = 'Please enter a URL.';
+            errorMessage.style.display = 'block';
+            return;
+        }
+
+        // Check if URL is too long
+        if (url.length > 500) {
+            errorMessage.textContent = 'URL is too long.';
+            errorMessage.style.display = 'block';
+            return;
+        }
+
+        // Regex pattern for URL validation
+        const urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
+
+        // Check if URL matches the pattern
+        if (!url.match(urlPattern)) {
+            errorMessage.textContent = 'Please enter a valid URL.';
+            errorMessage.style.display = 'block';
+        }
+    });
+
+    document.getElementById('urlForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const url = urlInput.value.trim();
+
+        // Send request to shorten URL
+        const response = await fetch('http://localhost:8080/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "link": url
+            })
+        });
+
+        // Handle response
+        const data = await response.json();
+        const shortUrl = data.data.short_url;
+
+        // Display shortened URL
+        const shortUrlElement = document.getElementById('shortUrl');
+        shortUrlElement.innerHTML = '';
+        const linkElement = document.createElement('a');
+        linkElement.href = shortUrl;
+        linkElement.target = '_blank';
+        linkElement.textContent = shortUrl;
+        shortUrlElement.appendChild(linkElement);
+
+        document.getElementById('shortUrlDiv').style.display = 'block';
+    });
+</script>
+</body>
+</html>
