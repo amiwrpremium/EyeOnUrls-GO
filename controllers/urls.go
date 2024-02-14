@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"EyeOnUrls/models"
+	"EyeOnUrls/utils"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -17,6 +18,10 @@ import (
 // @Failure 400 {string} string "Record not found!"
 // @Router /{short_url} [get]
 func FetchUrl(c *gin.Context) {
+	if "favicon.ico" == c.Param("short_url") {
+		return
+	}
+
 	var urlData models.Url
 
 	if err := models.DB.Where("short_url = ?", c.Param("short_url")).First(&urlData).Error; err != nil {
@@ -49,6 +54,13 @@ func CreateUrl(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	if utils.IsValidURL(input.OriginalUrl) == false {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid URL"})
+		return
+	}
+
+	input.OriginalUrl = utils.CompleteURL(input.OriginalUrl)
 
 	shortUrl := models.GenerateShortUrl()
 
